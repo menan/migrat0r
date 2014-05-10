@@ -32,7 +32,6 @@ from getpass import getpass
 
 from gmusicapi import Mobileclient
 
-use port 8080
 port = int(os.environ.get('PORT', 8080))
 
 # import web.py
