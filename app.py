@@ -32,7 +32,6 @@ from getpass import getpass
 
 from gmusicapi import Mobileclient
 
-port = int(os.environ.get('PORT', 8080))
 
 # import web.py
 import web
@@ -47,6 +46,9 @@ urls = (
   '/migrate', 'migrate',
   '/done', 'done',
 )
+
+port = os.environ.get('PORT', 8080)
+
 app = web.application(urls, port)
 render = web.template.render('templates/')
 
