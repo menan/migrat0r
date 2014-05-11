@@ -50,9 +50,8 @@ urls = (
 
 port = os.environ.get('PORT', 8080)
 
-# print '''PORT: %s''' % port
 
-app = web.application(urls, 42034)
+app = web.application(urls, globals())
 render = web.template.render('templates/')
 
 class root:
