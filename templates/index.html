@@ -1,25 +1,16 @@
-$def with (message)
+$def with (name, playlists, total)
 
-<!DOCTYPE html>
-<html>
+      <a href="/logout" class="btn btn-danger">Log out of Rdio</a>
+<h3>$name['firstName']'s playlists:</h3>
+	<table class="table">
+		<tr>
+			<th>Playlist Name</th><th>Songs</th>
+		</tr>
+	$for p in playlists
+		<tr>
+			<td><a href="$p['shortUrl']" target="_blank">$p['name']</a></td><td>$p['length']</td>
+		</tr>
+    </table>
 
-<head><title>Migrate Playlist - Login to Google Music</title></head>
-<body>
-
-<h1>Login to Google Music</h1>
-
-$if message:
-	<b>$message</b>
-
-<p>You gotta trust me on this one, I'm not storing your info.</p>
-
-<form method="POST" name="gmusic_login">
-
-	<input type="text" name="email" />
-	<input type="password" name="password" />
-
-	<input type="submit" name="login" value="Login and Migrate">
-</form>
-
-</body>
-</html>
+    <p>Now login to Google Music, so that I can migrate your info</p>
+      <a href="/migrate" class="btn btn-primary btn-lg right">Login to Google Music</a>
