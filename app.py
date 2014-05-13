@@ -48,11 +48,8 @@ urls = (
   '/done', 'done',
 )
 
-port = os.environ.get('PORT', 8080)
-
-
 app = web.application(urls, globals())
-render = web.template.render('templates/')
+render = web.template.render('templates/', base='layout')
 
 class root:
   def GET(self):
@@ -70,22 +67,10 @@ class root:
         raise web.seeother('/logout')
 
       myPlaylists = rdio.call('getPlaylists')['result']['owned']
-
-      response = '''
-      <html><head><title>Rdio-Simple Example</title></head><body>
-      <p>%s's playlists:</p>
-      <ul>
-      ''' % currentUser['firstName']
-      for playlist in myPlaylists:
-        response += '''<li><a href="%(shortUrl)s">%(name)s</a></li>''' % playlist
-      response += '''</ul><a href="/migrate">Migrate Playlist</a><br /><br /><a href="/logout">Log out of Rdio</a></body></html>'''
-      return response
+      print '''playlists: %s'''  % myPlaylists
+      return render.index(currentUser,myPlaylists, 0)
     else:
-      return '''
-      <html><head><title>Playlist Exporter</title></head><body>
-      <a href="/login">Log into Rdio</a>
-      </body></html>
-      '''
+      return render.login_rdio()
 
 class login:
   def GET(self):
@@ -139,7 +124,7 @@ class logout:
 
 class migrate:
   def GET(self):
-    return render.index("")
+    return render.login_google("")
 
   def POST(self):
     i = web.input()
@@ -157,7 +142,7 @@ class migrate:
       else:
         return 'Logged in to Google Music successfully, but you havent logged in to Rdio yet. Please go back and do that first <a href="/">Here</a>'
     else:  
-      return render.index("Incorrect Username or Password, Try Again.")
+      return render.login_google("Incorrect Username or Password, Try Again.")
 
 
   def process_playlist(self, googleApi):
@@ -192,6 +177,7 @@ class migrate:
       if playlist['name'] == name:
         playlist_id = playlist['id']
         found = True
+        break
 
     if found == False:
       playlist_id = api.create_playlist(name)
@@ -214,6 +200,7 @@ class migrate:
           track_id = track['track']['nid']
           print '''found a match with id %s''' % track['track']
           ++found
+          break
     return track_id
 
   def get_tracks_by_keys_from_rdio(self, keys, rdioApi):
