@@ -140,7 +140,7 @@ class migrate:
       access_token_secret = web.cookies().get('ats')
       if access_token and access_token_secret:
         # self.process_playlist(api)
-        result = q.enqueue(self.process_playlist, i.email, i.password)
+        result = q.enqueue(self.process_playlist, i.email, i.password, access_token, access_token_secret)
 
         return render.done()
       else:
@@ -149,7 +149,7 @@ class migrate:
       return render.login_google("Incorrect Username or Password, Try Again.")
 
 
-  def process_playlist(self, email, password):
+  def process_playlist(self, email, password, access_token, access_token_secret):
 
     googleApi = Mobileclient()
 
@@ -158,10 +158,9 @@ class migrate:
 
     if logged_in:
       all_playlists = googleApi.get_all_playlists()
-      access_token = web.cookies().get('at')
-      access_token_secret = web.cookies().get('ats')
-      rdio = Rdio(RDIO_CREDENTIALS,
-        (access_token, access_token_secret))
+      # access_token = web.cookies().get('at')
+      # access_token_secret = web.cookies().get('ats')
+      rdio = Rdio(RDIO_CREDENTIALS, (access_token, access_token_secret))
       playlists = rdio.call('getPlaylists', {'extras':'trackKeys'})['result']['owned']
       playlist = playlists[0]
       for playlist in playlists:
