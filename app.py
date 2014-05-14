@@ -173,8 +173,9 @@ class migrate:
           # print '''gonna look for %s by %s on gmusic''' % (song['name'], song['artist'])
           track_id = self.search_song_by_name(song['name'], song['artist'] ,googleApi)
           # uses the existing playlist so that we won't have to create a new one.
-          print '''track %s id is %s''' % (song['name'], track_id)
-          playlist_id = self.find_or_create_playlist_by_name(playlist['name'],googleApi,all_playlists)
+          # print '''track %s id is %s''' % (song['name'], track_id)
+          self.remove_playlist_by_name(playlist['name'], googleApi, all_playlists)
+          playlist_id = self.find_or_create_playlist_by_name(playlist['name'], googleApi, all_playlists)
           if track_id > 0:
             googleApi.add_songs_to_playlist(playlist_id,track_id)
             print '''added song %s to playlist %s''' % (song['name'], playlist['name'])
@@ -189,7 +190,7 @@ class migrate:
       if playlist['name'] == name:
         playlist_id = playlist['id']
         found = True
-        break
+        # break
 
     if found == False:
       playlist_id = api.create_playlist(name)
@@ -200,7 +201,7 @@ class migrate:
     for playlist in all_google_playlists:
       if playlist['name'] == name:
         api.delete_playlist(playlist['id'])   
-        print '''deleted %s with id %s''' % (playlist['name'],playlist['id'])
+        # print '''deleted %s with id %s''' % (playlist['name'],playlist['id'])
 
   def search_song_by_name(self,name,artist_name, api):
     results = api.search_all_access(name)['song_hits']
@@ -210,7 +211,7 @@ class migrate:
       for track in results:
         if track['track']['artist'] == artist_name:
           track_id = track['track']['nid']
-          print '''found a match with id %s''' % track['track']
+          # print '''found a match with id %s''' % track['track']['nid']
           ++found
           break
     return track_id
