@@ -141,7 +141,7 @@ class migrate:
       access_token_secret = web.cookies().get('ats')
       if access_token and access_token_secret:
         # self.process_playlist(api)
-        result = q.enqueue(process_playlist, api)
+        result = q.enqueue(self.process_playlist, api)
 
         return render.done()
       else:
