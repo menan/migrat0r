@@ -133,6 +133,7 @@ class migrate:
     i = web.input()
 
 
+    api = Mobileclient()
     logged_in = api.login(i.email, i.password)
     if logged_in:
       access_token = web.cookies().get('at')
