@@ -36,6 +36,8 @@ from gmusicapi import Mobileclient
 # import web.py
 import web
 import os
+from rq import Queue
+from worker import conn
 
 import urllib2
 
@@ -50,6 +52,7 @@ urls = (
 
 app = web.application(urls, globals())
 render = web.template.render('templates/', base='layout')
+q = Queue(connection=conn)
 
 class root:
   def GET(self):
@@ -137,7 +140,9 @@ class migrate:
       access_token = web.cookies().get('at')
       access_token_secret = web.cookies().get('ats')
       if access_token and access_token_secret:
-        self.process_playlist(api)
+        # self.process_playlist(api)
+        result = q.enqueue(process_playlist, api)
+
         return render.done()
       else:
         return 'Logged in to Google Music successfully, but you havent logged in to Rdio yet. Please go back and do that first <a href="/">Here</a>'
@@ -168,7 +173,7 @@ class migrate:
         if track_id > 0:
           googleApi.add_songs_to_playlist(playlist_id,track_id)
           print '''added song %s to playlist %s''' % (song['name'], playlist['name'])
-
+    return True
 
 
   def find_or_create_playlist_by_name(self,name,  api, all_google_playlists):
