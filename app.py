@@ -157,7 +157,6 @@ class migrate:
 
 
     if logged_in:
-      all_playlists = googleApi.get_all_playlists()
       # access_token = web.cookies().get('at')
       # access_token_secret = web.cookies().get('ats')
       rdio = Rdio(RDIO_CREDENTIALS, (access_token, access_token_secret))
@@ -167,8 +166,9 @@ class migrate:
         tracks_string = ','.join(playlist['trackKeys'])
         songs_info = self.get_tracks_by_keys_from_rdio(tracks_string,rdio)
 
-        # print '''gonna remove playlist by name %s''' % playlist['name']
-        # self.remove_playlist_by_name(playlist['name'], googleApi, all_playlists)
+        # print '''removing playlist by name %s''' % playlist['name']
+        # self.remove_playlist_by_name(playlist['name'], googleApi)
+        # print '''done'''
 
         for key in playlist['trackKeys']:
           song = songs_info[key]
@@ -176,7 +176,7 @@ class migrate:
           track_id = self.search_song_by_name(song['name'], song['artist'] ,googleApi)
           # uses the existing playlist so that we won't have to create a new one.
           # print '''track %s id is %s''' % (song['name'], track_id)
-          playlist_id = self.find_or_create_playlist_by_name(playlist['name'], googleApi, all_playlists)
+          playlist_id = self.find_or_create_playlist_by_name(playlist['name'], googleApi)
           if track_id > 0:
             googleApi.add_songs_to_playlist(playlist_id,track_id)
             print '''added song %s to playlist %s''' % (song['name'], playlist['name'])
@@ -186,7 +186,8 @@ class migrate:
       return False
 
 
-  def find_or_create_playlist_by_name(self,name,  api, all_google_playlists):
+  def find_or_create_playlist_by_name(self,name,  api):
+    all_google_playlists = api.get_all_playlists()
     found = False
     for playlist in all_google_playlists:
       if playlist['name'] == name:
@@ -199,7 +200,8 @@ class migrate:
 
     return playlist_id
 
-  def remove_playlist_by_name(self,name, api,  all_google_playlists):
+  def remove_playlist_by_name(self,name, api):
+    all_google_playlists = api.get_all_playlists()
     for playlist in all_google_playlists:
       if playlist['name'] == name:
         api.delete_playlist(playlist['id'])   
