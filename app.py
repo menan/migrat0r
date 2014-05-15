@@ -167,35 +167,35 @@ class migrate:
       # access_token_secret = web.cookies().get('ats')
       rdio = Rdio(RDIO_CREDENTIALS, (access_token, access_token_secret))
       playlists = rdio.call('getPlaylists', {'extras':'trackKeys'})['result']['owned']
-      playlist = playlists[0]
+      # playlist = playlists[0]
       songs = 0
       totalSongs = 0
-      # for playlist in playlists:
-      tracks_string = ','.join(playlist['trackKeys'])
-      songs_info = self.get_tracks_by_keys_from_rdio(tracks_string,rdio)
+      for playlist in playlists:
+        tracks_string = ','.join(playlist['trackKeys'])
+        songs_info = self.get_tracks_by_keys_from_rdio(tracks_string,rdio)
 
-      # print '''removing playlist by name %s''' % playlist['name']
-      # self.remove_playlist_by_name(playlist['name'], googleApi)
-      # print '''done'''
-      totalSongs += len(playlist['trackKeys'])
+        # print '''removing playlist by name %s''' % playlist['name']
+        # self.remove_playlist_by_name(playlist['name'], googleApi)
+        # print '''done'''
+        totalSongs += len(playlist['trackKeys'])
 
-      for key in playlist['trackKeys']:
-        song = songs_info[key]
-        # print '''gonna look for %s by %s on gmusic''' % (song['name'], song[comparing_field])
-        track_id = self.search_song_by_name(song['name'], song ,googleApi)
-        # uses the existing playlist so that we won't have to create a new one.
-        # print '''track %s id is %s''' % (song['name'], track_id)
-        playlist_id = self.find_or_create_playlist_by_name(playlist['name'], googleApi)
-        if track_id > 0:
-          songs += 1
-          googleApi.add_songs_to_playlist(playlist_id,track_id)
-          print '''added song %s to playlist %s''' % (song['name'], playlist['name'])
-          # sleep(2)
+        for key in playlist['trackKeys']:
+          song = songs_info[key]
+          # print '''gonna look for %s by %s on gmusic''' % (song['name'], song[comparing_field])
+          track_id = self.search_song_by_name(song['name'], song ,googleApi)
+          # uses the existing playlist so that we won't have to create a new one.
+          # print '''track %s id is %s''' % (song['name'], track_id)
+          playlist_id = self.find_or_create_playlist_by_name(playlist['name'], googleApi)
+          if track_id > 0:
+            songs += 1
+            googleApi.add_songs_to_playlist(playlist_id,track_id)
+            print '''added song %s to playlist %s''' % (song['name'], playlist['name'])
+            # sleep(2)
 
-      web.sendmail('migrat0r@tinrit.com', email, 'Playlist Migration Complete!', '''<h2>Migration Completed</h2> Your playlists have been migrated to Google Music successfully.<br /><br /> <b>%s</b> of <b>%s</b> songs were migrated.  <br /><br /><br /> <a href="http://twitter.com/MenanV">@MenanV</a>''' % (songs, totalSongs), headers={'Content-Type':'text/html;charset=utf-8'})
-      return True
-    else:
-      return False
+        web.sendmail('migrat0r@tinrit.com', email, 'Playlist Migration Complete!', '''<h2>Migration Completed</h2> Your playlists have been migrated to Google Music successfully.<br /><br /> <b>%s</b> of <b>%s</b> songs were migrated.  <br /><br /><br /> <a href="http://twitter.com/MenanV">@MenanV</a>''' % (songs, totalSongs), headers={'Content-Type':'text/html;charset=utf-8'})
+        return True
+      else:
+        return False
 
 
   def find_or_create_playlist_by_name(self,name,  api):
