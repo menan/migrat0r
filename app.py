@@ -184,7 +184,7 @@ class migrate:
       for key in playlist['trackKeys']:
         song = songs_info[key]
         # print '''gonna look for %s by %s on gmusic''' % (song['name'], song[comparing_field])
-        track_id = self.search_song_by_name(song['name'], song[comparing_field] ,googleApi)
+        track_id = self.search_song_by_name(song['name'], song ,googleApi)
         # uses the existing playlist so that we won't have to create a new one.
         # print '''track %s id is %s''' % (song['name'], track_id)
         playlist_id = self.find_or_create_playlist_by_name(playlist['name'], googleApi)
@@ -194,7 +194,7 @@ class migrate:
           print '''added song %s to playlist %s''' % (song['name'], playlist['name'])
           # sleep(2)
 
-      web.sendmail('migrat0r@tinrit.com', email, 'Playlist Migration Complete!', '''<h2>Migration Completed<h2> Your playlists have been migrated to Google Music successfully.<br /><br /> <b>%s</b> of <b>%s</b> songs were migrated.  <br /><br /><br /> and You're Welcome :),<br /> <a href="http://twitter.com/MenanV">@MenanV</a>''' % (songs, totalSongs), headers={'Content-Type':'text/html;charset=utf-8'})
+      web.sendmail('migrat0r@tinrit.com', email, 'Playlist Migration Complete!', '''<h2>Migration Completed</h2> Your playlists have been migrated to Google Music successfully.<br /><br /> <b>%s</b> of <b>%s</b> songs were migrated.  <br /><br /><br /> and You're Welcome :),<br /> <a href="http://twitter.com/MenanV">@MenanV</a>''' % (songs, totalSongs), headers={'Content-Type':'text/html;charset=utf-8'})
       return True
     else:
       return False
@@ -221,13 +221,13 @@ class migrate:
         api.delete_playlist(playlist['id'])   
         # print '''deleted %s with id %s''' % (playlist['name'],playlist['id'])
 
-  def search_song_by_name(self,name,artist_name, api):
+  def search_song_by_name(self,name,song_original, api):
     results = api.search_all_access(name)['song_hits']
     found = 0
     track_id = 0
     if results.count > 0:
       for track in results:
-        if track['track'][comparing_field] == artist_name:
+        if track['track']['artist'] == song_original['artist'] or track['track']['album'] == song_original['album']:
           track_id = track['track']['nid']
           # print '''found a match with id %s''' % track['track']['nid']
           ++found
