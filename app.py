@@ -139,8 +139,8 @@ class migrate:
       access_token = web.cookies().get('at')
       access_token_secret = web.cookies().get('ats')
       if access_token and access_token_secret:
-        # self.process_playlist(api)
-        result = q.enqueue(self.process_playlist, i.email, i.password, access_token, access_token_secret)
+        self.process_playlist(api)
+        # result = q.enqueue(self.process_playlist, i.email, i.password, access_token, access_token_secret)
 
         return render.done()
       else:
@@ -175,10 +175,11 @@ class migrate:
           # uses the existing playlist so that we won't have to create a new one.
           # print '''track %s id is %s''' % (song['name'], track_id)
           self.remove_playlist_by_name(playlist['name'], googleApi, all_playlists)
-          playlist_id = self.find_or_create_playlist_by_name(playlist['name'], googleApi, all_playlists)
-          if track_id > 0:
-            googleApi.add_songs_to_playlist(playlist_id,track_id)
-            print '''added song %s to playlist %s''' % (song['name'], playlist['name'])
+          # playlist_id = self.find_or_create_playlist_by_name(playlist['name'], googleApi, all_playlists)
+          # if track_id > 0:
+          #   googleApi.add_songs_to_playlist(playlist_id,track_id)
+          #   print '''added song %s to playlist %s''' % (song['name'], playlist['name'])
+          # sleep(2)
       return True
     else:
       return False
