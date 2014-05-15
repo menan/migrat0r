@@ -32,12 +32,6 @@ from getpass import getpass
 
 from gmusicapi import Mobileclient
 
-web.config.smtp_server = ***REMOVED***
-web.config.smtp_port = 587
-web.config.smtp_username = ***REMOVED***
-web.config.smtp_password = ***REMOVED***
-web.config.smtp_starttls = True
-
 # import web.py
 import web
 import os
@@ -54,6 +48,13 @@ urls = (
   '/migrate', 'migrate',
   '/done', 'done',
 )
+
+web.config.smtp_server = ***REMOVED***
+web.config.smtp_port = 587
+web.config.smtp_username = ***REMOVED***
+web.config.smtp_password = ***REMOVED***
+web.config.smtp_starttls = True
+
 
 app = web.application(urls, globals())
 render = web.template.render('templates/', base='layout')
