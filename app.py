@@ -192,10 +192,10 @@ class migrate:
             print '''added song %s to playlist %s''' % (song['name'], playlist['name'])
             # sleep(2)
 
-        web.sendmail('migrat0r@tinrit.com', email, 'Playlist Migration Complete!', '''<h2>Migration Completed</h2> Your playlists have been migrated to Google Music successfully.<br /><br /> <b>%s</b> of <b>%s</b> songs were migrated.  <br /><br /><br /> <a href="http://twitter.com/MenanV">@MenanV</a>''' % (songs, totalSongs), headers={'Content-Type':'text/html;charset=utf-8'})
-        return True
-      else:
-        return False
+      web.sendmail('migrat0r@tinrit.com', email, 'Playlist Migration Complete!', '''<h2>Migration Completed</h2> Your playlists have been migrated to Google Music successfully.<br /><br /> <b>%s</b> of <b>%s</b> songs were migrated.  <br /><br /><br /> <a href="http://twitter.com/MenanV">@MenanV</a>''' % (songs, totalSongs), headers={'Content-Type':'text/html;charset=utf-8'})
+      return True
+    else:
+      return False
 
 
   def find_or_create_playlist_by_name(self,name,  api):
