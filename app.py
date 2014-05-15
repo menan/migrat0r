@@ -32,6 +32,11 @@ from getpass import getpass
 
 from gmusicapi import Mobileclient
 
+web.config.smtp_server = 'smtp.mandrillapp.com'
+web.config.smtp_port = 587
+web.config.smtp_username = 'tinrit'
+web.config.smtp_password = 'KZO8Uj-qBL9b7ji7MN18nA'
+web.config.smtp_starttls = True
 
 # import web.py
 import web
@@ -53,6 +58,8 @@ urls = (
 app = web.application(urls, globals())
 render = web.template.render('templates/', base='layout')
 q = Queue(connection=conn)
+comparing_field = 'album' #uses this field to compare the title to see if its what we are looking for. Mess with it to change the matching algorithm.
+
 
 class root:
   def GET(self):
@@ -162,27 +169,31 @@ class migrate:
       rdio = Rdio(RDIO_CREDENTIALS, (access_token, access_token_secret))
       playlists = rdio.call('getPlaylists', {'extras':'trackKeys'})['result']['owned']
       playlist = playlists[0]
-      for playlist in playlists:
-        tracks_string = ','.join(playlist['trackKeys'])
-        songs_info = self.get_tracks_by_keys_from_rdio(tracks_string,rdio)
+      songs = 0
+      totalSongs = 0
+      # for playlist in playlists:
+      tracks_string = ','.join(playlist['trackKeys'])
+      songs_info = self.get_tracks_by_keys_from_rdio(tracks_string,rdio)
 
-        print '''removing playlist by name %s''' % playlist['name']
-        self.remove_playlist_by_name(playlist['name'], googleApi)
-        print '''done'''
+      print '''removing playlist by name %s''' % playlist['name']
+      self.remove_playlist_by_name(playlist['name'], googleApi)
+      print '''done'''
+      totalSongs += len(playlist['trackKeys'])
 
-        # for key in playlist['trackKeys']:
-        #   song = songs_info[key]
-        #   # print '''gonna look for %s by %s on gmusic''' % (song['name'], song['artist'])
-        #   track_id = self.search_song_by_name(song['name'], song['artist'] ,googleApi)
-        #   # uses the existing playlist so that we won't have to create a new one.
-        #   # print '''track %s id is %s''' % (song['name'], track_id)
-        #   playlist_id = self.find_or_create_playlist_by_name(playlist['name'], googleApi)
-        #   if track_id > 0:
-        #     googleApi.add_songs_to_playlist(playlist_id,track_id)
-        #     print '''added song %s to playlist %s''' % (song['name'], playlist['name'])
-        #     sleep(2)
+      for key in playlist['trackKeys']:
+        song = songs_info[key]
+        # print '''gonna look for %s by %s on gmusic''' % (song['name'], song[comparing_field])
+        track_id = self.search_song_by_name(song['name'], song[comparing_field] ,googleApi)
+        # uses the existing playlist so that we won't have to create a new one.
+        # print '''track %s id is %s''' % (song['name'], track_id)
+        playlist_id = self.find_or_create_playlist_by_name(playlist['name'], googleApi)
+        if track_id > 0:
+          ++songs
+          googleApi.add_songs_to_playlist(playlist_id,track_id)
+          print '''added song %s to playlist %s''' % (song['name'], playlist['name'])
+          # sleep(2)
 
-      web.sendmail('menan.vadivel@gmail.com', email, 'Playlist Migration Complete!', 'Your playlists have been fully migrated to Google Music, Enjoy. \n\n\n Menan')
+      web.sendmail('migrat0r@tinrit.com', email, 'Playlist Migration Complete!', '''Your playlists have been migrated to Google Music. %s of %s songs were migrated successfully. and You're Welcome :)  \n\n\n Menan''' % (songs, totalSongs))
       return True
     else:
       return False
@@ -215,7 +226,7 @@ class migrate:
     track_id = 0
     if results.count > 0:
       for track in results:
-        if track['track']['artist'] == artist_name:
+        if track['track'][comparing_field] == artist_name:
           track_id = track['track']['nid']
           # print '''found a match with id %s''' % track['track']['nid']
           ++found
