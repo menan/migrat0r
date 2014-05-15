@@ -59,8 +59,6 @@ web.config.smtp_starttls = True
 app = web.application(urls, globals())
 render = web.template.render('templates/', base='layout')
 q = Queue(connection=conn)
-comparing_field = 'album' #uses this field to compare the title to see if its what we are looking for. Mess with it to change the matching algorithm.
-
 
 class root:
   def GET(self):
@@ -176,9 +174,9 @@ class migrate:
       tracks_string = ','.join(playlist['trackKeys'])
       songs_info = self.get_tracks_by_keys_from_rdio(tracks_string,rdio)
 
-      print '''removing playlist by name %s''' % playlist['name']
-      self.remove_playlist_by_name(playlist['name'], googleApi)
-      print '''done'''
+      # print '''removing playlist by name %s''' % playlist['name']
+      # self.remove_playlist_by_name(playlist['name'], googleApi)
+      # print '''done'''
       totalSongs += len(playlist['trackKeys'])
 
       for key in playlist['trackKeys']:
@@ -194,7 +192,7 @@ class migrate:
           print '''added song %s to playlist %s''' % (song['name'], playlist['name'])
           # sleep(2)
 
-      web.sendmail('migrat0r@tinrit.com', email, 'Playlist Migration Complete!', '''<h2>Migration Completed</h2> Your playlists have been migrated to Google Music successfully.<br /><br /> <b>%s</b> of <b>%s</b> songs were migrated.  <br /><br /><br /> and You're Welcome :),<br /> <a href="http://twitter.com/MenanV">@MenanV</a>''' % (songs, totalSongs), headers={'Content-Type':'text/html;charset=utf-8'})
+      web.sendmail('migrat0r@tinrit.com', email, 'Playlist Migration Complete!', '''<h2>Migration Completed</h2> Your playlists have been migrated to Google Music successfully.<br /><br /> <b>%s</b> of <b>%s</b> songs were migrated.  <br /><br /><br /> <a href="http://twitter.com/MenanV">@MenanV</a>''' % (songs, totalSongs), headers={'Content-Type':'text/html;charset=utf-8'})
       return True
     else:
       return False
