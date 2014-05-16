@@ -153,7 +153,7 @@ class migrate:
       access_token_secret = web.cookies().get('ats')
       if access_token and access_token_secret:
         # self.process_playlist(i.email, i.password, access_token, access_token_secret)
-        result = q.enqueue(self.process_playlist, i.email, i.password, access_token, access_token_secret, timeout=500)
+        result = q.enqueue(self.process_playlist, i.email, i.password, access_token, access_token_secret, timeout=5000)
 
         return render.done()
       else:
@@ -187,7 +187,7 @@ class migrate:
         totalSongs += len(playlist['trackKeys'])
 
         playlist_id = self.find_or_create_playlist_by_name(playlist['name'], googleApi)
-        
+
         for key in playlist['trackKeys']:
           song = songs_info[key]
           # print '''gonna look for %s by %s on gmusic''' % (song['name'], song[comparing_field])
