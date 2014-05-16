@@ -49,11 +49,17 @@ urls = (
   '/done', 'done',
 )
 
-web.config.smtp_server = ***REMOVED***
+
+
+#for migration finished email notification, as soon as the worker finishes it's job
+web.config.smtp_server = os.environ.get('SMTP_SERVER','')
 web.config.smtp_port = 587
-web.config.smtp_username = ***REMOVED***
-web.config.smtp_password = ***REMOVED***
+web.config.smtp_username = os.environ.get('SMTP_USERNAME','')
+web.config.smtp_password = os.environ.get('SMTP_PASSWORD','')
 web.config.smtp_starttls = True
+from_email = os.environ.get('FROM_EMAIL','migrat0r@tinrit.com')
+
+
 
 
 app = web.application(urls, globals())
@@ -192,7 +198,7 @@ class migrate:
             print '''added song %s to playlist %s''' % (song['name'], playlist['name'])
             # sleep(2)
 
-      web.sendmail('migrat0r@tinrit.com', email, 'Playlist Migration Complete!', '''<h2>Migration Completed</h2> Your playlists have been migrated to Google Music successfully.<br /><br /> <b>%s</b> of <b>%s</b> songs were migrated.  <br /><br /><br /> <a href="http://twitter.com/MenanV">@MenanV</a>''' % (songs, totalSongs), headers={'Content-Type':'text/html;charset=utf-8'})
+      web.sendmail(from_email, email, 'Playlist Migration Complete!', '''<h2>Migration Completed</h2> Your playlists have been migrated to Google Music successfully.<br /><br /> <b>%s</b> of <b>%s</b> songs were migrated.  <br /><br /><br /> <a href="http://twitter.com/MenanV">@MenanV</a>''' % (songs, totalSongs), headers={'Content-Type':'text/html;charset=utf-8'})
       return True
     else:
       return False
