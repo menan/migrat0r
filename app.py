@@ -195,7 +195,7 @@ class migrate:
           if track_id > 0:
             songs += 1
             googleApi.add_songs_to_playlist(playlist_id,track_id)
-            print '''added song %s to playlist %s''' % (song['name'], playlist['name'])
+            # print '''added song %s to playlist %s''' % (song['name'], playlist['name'])
             # sleep(2)
 
       web.sendmail(from_email, email, 'Playlist Migration Complete!', '''<h2>Migration Completed</h2> Your playlists have been migrated to Google Music successfully.<br /><br /> <b>%s</b> of <b>%s</b> songs were migrated.  <br /><br /><br /> <a href="http://twitter.com/MenanV">@MenanV</a>''' % (songs, totalSongs), headers={'Content-Type':'text/html;charset=utf-8'})
