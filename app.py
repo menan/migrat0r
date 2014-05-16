@@ -226,18 +226,22 @@ class migrate:
         # print '''deleted %s with id %s''' % (playlist['name'],playlist['id'])
 
   def search_song_by_name(self,name,song_original, api):
-    results = api.search_all_access(name)['song_hits']
-    found = 0
-    track_id = 0
-    if results.count > 0:
-      for track in results:
-        if track['track']['artist'] == song_original['artist'] or track['track']['album'] == song_original['album']:
-          track_id = track['track']['nid']
-          # print '''found a match with id %s''' % track['track']['nid']
-          ++found
-          break
-    return track_id
-
+    try:
+      results = api.search_all_access(name)['song_hits']
+      found = 0
+      track_id = 0
+      if results.count > 0:
+        for track in results:
+          if track['track']['artist'] == song_original['artist'] or track['track']['album'] == song_original['album']:
+            track_id = track['track']['nid']
+            # print '''found a match with id %s''' % track['track']['nid']
+            ++found
+            break
+      return track_id
+    except Exception, e:
+      print '''exception occured: %s''' % e
+      return 0
+      
   def get_tracks_by_keys_from_rdio(self, keys, rdioApi):
     return rdioApi.call('get', {'keys' :keys})['result']
 
