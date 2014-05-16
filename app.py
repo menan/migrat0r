@@ -32,6 +32,7 @@ from getpass import getpass
 
 from gmusicapi import Mobileclient
 
+from time import sleep
 # import web.py
 import web
 import os
@@ -185,18 +186,19 @@ class migrate:
         # print '''done'''
         totalSongs += len(playlist['trackKeys'])
 
+        playlist_id = self.find_or_create_playlist_by_name(playlist['name'], googleApi)
+        
         for key in playlist['trackKeys']:
           song = songs_info[key]
           # print '''gonna look for %s by %s on gmusic''' % (song['name'], song[comparing_field])
           track_id = self.search_song_by_name(song['name'], song ,googleApi)
           # uses the existing playlist so that we won't have to create a new one.
           # print '''track %s id is %s''' % (song['name'], track_id)
-          playlist_id = self.find_or_create_playlist_by_name(playlist['name'], googleApi)
           if track_id > 0:
             songs += 1
             googleApi.add_songs_to_playlist(playlist_id,track_id)
+            sleep(1)
             # print '''added song %s to playlist %s''' % (song['name'], playlist['name'])
-            # sleep(2)
 
       web.sendmail(from_email, email, 'Playlist Migration Complete!', '''<h2>Migration Completed</h2> Your playlists have been migrated to Google Music successfully.<br /><br /> <b>%s</b> of <b>%s</b> songs were migrated.  <br /><br /><br /> <a href="http://twitter.com/MenanV">@MenanV</a>''' % (songs, totalSongs), headers={'Content-Type':'text/html;charset=utf-8'})
       return True
@@ -241,7 +243,7 @@ class migrate:
     except Exception, e:
       print '''exception occured: %s''' % e
       return 0
-      
+
   def get_tracks_by_keys_from_rdio(self, keys, rdioApi):
     return rdioApi.call('get', {'keys' :keys})['result']
 
