@@ -3,7 +3,7 @@ Migrat0r
 
 Export Rdio playlist to Google Music
 
-Demo: http://rdio-exporter.herokuapp.com/
+Demo: http://migrat0r.herokuapp.com/
 
 
 By using Migrator you may violate both Rdio's and/or Google's Terms of Service. You agree that
